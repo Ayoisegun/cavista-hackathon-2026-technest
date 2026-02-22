@@ -56,7 +56,7 @@ ElderCare AI combines:
 - Detects unusual silence
 - Alerts caregiver to potential emergencies
 
-### 4. Emergency Button
+### 4. Emergency Trigger
 - One-tap activation
 - Calls caregiver immediately
 - Sends alert notification
