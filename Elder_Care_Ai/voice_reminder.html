@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
@@ -39,114 +38,298 @@
         body {
             font-family: 'Inter', sans-serif;
         }
+        .loading-spinner {
+            border: 4px solid rgba(43, 160, 238, 0.1);
+            border-top: 4px solid #2ba0ee;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
-<!-- Main Layout Container (Mobile centered view) -->
+<!-- Main Layout Container -->
 <div class="relative mx-auto min-h-screen max-w-md flex flex-col bg-white dark:bg-slate-900 shadow-xl overflow-hidden">
-<!-- Header -->
-<header class="sticky top-0 z-10 flex items-center justify-between bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-6 py-6 border-b border-slate-100 dark:border-slate-800">
-<div class="flex items-center gap-3">
-    <span class="material-symbols-outlined">notification_important</span>
-<h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Reminders</h1>
+    
+    <!-- Header with Exit -->
+    <header class="sticky top-0 z-10 flex items-center justify-between bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-6 py-6 border-b border-slate-100 dark:border-slate-800">
+        <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-primary">notification_important</span>
+            <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Reminders</h1>
+        </div>
+        
+        <!-- Exit Button -->
+        <div class="relative group">
+            <a href="#" onclick="showExitModal(); return false;" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-primary/10 transition-all">
+                <span class="material-symbols-outlined text-slate-600 dark:text-slate-400 group-hover:text-primary">logout</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Exit Modal -->
+    <div id="exitModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 max-w-sm mx-4 shadow-2xl">
+            <div class="text-center mb-6">
+                <div class="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="material-symbols-outlined text-primary text-4xl">logout</span>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Leave this page?</h3>
+                <p class="text-slate-600 dark:text-slate-400">This will take you back to the login screen.</p>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="closeExitModal()" class="flex-1 py-3 border-2 border-slate-300 rounded-xl font-bold text-slate-700 hover:bg-slate-50 transition-colors">
+                    Stay
+                </button>
+                <a href="sign_upPage.html" class="flex-1 py-3 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-colors text-center">
+                    Exit
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Modal -->
+    <div id="loadingModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-8 max-w-sm mx-4 shadow-2xl text-center">
+            <div class="loading-spinner mx-auto mb-4"></div>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Loading your reminders...</h3>
+            <p class="text-slate-600 dark:text-slate-400">Please wait a moment</p>
+        </div>
+    </div>
+
+    <!-- Add Reminder Modal -->
+    <div id="addReminderModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 max-w-sm mx-4 shadow-2xl">
+            <div class="text-center mb-4">
+                <div class="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="material-symbols-outlined text-primary text-4xl">add_alarm</span>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Add New Reminder</h3>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Type</label>
+                    <input type="text" id="reminderType" placeholder="e.g., Medication" 
+                           class="w-full p-3 border-2 border-slate-200 rounded-lg focus:border-primary outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Time</label>
+                    <input type="time" id="reminderTime" 
+                           class="w-full p-3 border-2 border-slate-200 rounded-lg focus:border-primary outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Dosage (Optional)</label>
+                    <input type="text" id="reminderDosage" placeholder="e.g., 1 tablet" 
+                           class="w-full p-3 border-2 border-slate-200 rounded-lg focus:border-primary outline-none">
+                </div>
+            </div>
+            
+            <div class="flex gap-3 mt-6">
+                <button onclick="closeAddReminderModal()" class="flex-1 py-3 border-2 border-slate-300 rounded-xl font-bold text-slate-700 hover:bg-slate-50 transition-colors">
+                    Cancel
+                </button>
+                <button onclick="saveNewReminder()" class="flex-1 py-3 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-colors">
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-1 px-6 py-6 space-y-6 overflow-y-auto pb-24">
+        <!-- Daily Progress Card -->
+        <div id="progressCard" class="bg-primary/5 dark:bg-primary/10 rounded-xl p-5 border border-primary/10">
+            <div class="flex justify-between items-end mb-3">
+                <div>
+                    <p class="text-sm font-medium text-primary uppercase tracking-wider">Today's Progress</p>
+                    <p class="text-2xl font-black text-slate-900 dark:text-white" id="progressText">Loading...</p>
+                </div>
+                <p class="text-lg font-bold text-primary" id="progressPercentage">0%</p>
+            </div>
+            <div class="w-full bg-slate-200 dark:bg-slate-700 h-3 rounded-full overflow-hidden">
+                <div class="bg-primary h-full rounded-full transition-all duration-500" id="progressBar" style="width: 0%;"></div>
+            </div>
+        </div>
+
+        <!-- Reminders Container -->
+        <div id="remindersContainer" class="space-y-4">
+            <!-- Reminders will be loaded here -->
+        </div>
+
+        <!-- Add Reminder Button -->
+        <button onclick="showAddReminderModal()" class="w-full py-4 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined">add</span>
+            <span>Add New Reminder</span>
+        </button>
+    </main>
+
+    <!-- Navigation Bar -->
+    <nav class="sticky bottom-0 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 px-6 py-3 flex justify-between items-center">
+    </nav>
 </div>
-</header>
-<!-- Main Content -->
-<main class="flex-1 px-6 py-6 space-y-6">
-<!-- Daily Progress Card -->
-<div class="bg-primary/5 dark:bg-primary/10 rounded-xl p-5 border border-primary/10">
-<div class="flex justify-between items-end mb-3">
-<div>
-<p class="text-sm font-medium text-primary uppercase tracking-wider">Today's Progress</p>
-<p class="text-2xl font-black text-slate-900 dark:text-white">1 of 3 Done</p>
-</div>
-<p class="text-lg font-bold text-primary">33%</p>
-</div>
-<div class="w-full bg-slate-200 dark:bg-slate-700 h-3 rounded-full overflow-hidden">
-<div class="bg-primary h-full rounded-full transition-all duration-500" style="width: 33.33%;"></div>
-</div>
-</div>
-<!-- Reminder Card 1: Taken -->
-<div class="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col gap-4">
-<div class="flex justify-between items-start">
-<div class="space-y-1">
-<span class="text-lg font-bold text-slate-500 dark:text-slate-400">8:00 AM</span>
-<h3 class="text-xl font-bold leading-tight">Blood pressure medication</h3>
-</div>
-<span class="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-sm font-bold rounded-full uppercase tracking-wide">Taken</span>
-</div>
-<div class="flex items-center gap-3 mt-2">
-<button class="flex-1 flex items-center justify-center gap-2 py-3 px-4 bg-slate-100 dark:bg-slate-700 rounded-lg text-slate-700 dark:text-slate-200 font-bold transition-transform active:scale-95">
-<span class="material-symbols-outlined text-[20px]">volume_up</span>
-                        Listen
-                    </button>
-<button class="flex-1 flex items-center justify-center gap-2 py-3 px-4 bg-slate-100 dark:bg-slate-700 rounded-lg text-slate-700 dark:text-slate-200 font-bold transition-transform active:scale-95">
-<span class="material-symbols-outlined text-[20px]">check_circle</span>
-                        Details
-                    </button>
-</div>
-</div>
-<!-- Reminder Card 2: Pending -->
-<div class="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col gap-4">
-<div class="flex justify-between items-start">
-<div class="space-y-1">
-<span class="text-lg font-bold text-slate-500 dark:text-slate-400">9:30 AM</span>
-<h3 class="text-xl font-bold leading-tight">Morning Walk</h3>
-</div>
-<span class="px-3 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 text-sm font-bold rounded-full uppercase tracking-wide">Pending</span>
-</div>
-<div class="flex items-center gap-3 mt-2">
-<button class="flex-1 flex items-center justify-center gap-2 py-3 px-4 bg-primary text-white rounded-lg font-bold shadow-md shadow-primary/20 transition-transform active:scale-95">
-<span class="material-symbols-outlined text-[20px]">volume_up</span>
-                        Listen
-                    </button>
-<button class="flex-1 flex items-center justify-center gap-2 py-3 px-4 bg-slate-100 dark:bg-slate-700 rounded-lg text-slate-700 dark:text-slate-200 font-bold transition-transform active:scale-95">
-<span class="material-symbols-outlined text-[20px]">directions_walk</span>
-                        Start
-                    </button>
-</div>
-</div>
-<!-- Reminder Card 3: Missed -->
-<div class="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col gap-4">
-<div class="flex justify-between items-start">
-<div class="space-y-1">
-<span class="text-lg font-bold text-slate-500 dark:text-slate-400">12:00 PM</span>
-<h3 class="text-xl font-bold leading-tight">Vitamin D</h3>
-</div>
-<span class="px-3 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-sm font-bold rounded-full uppercase tracking-wide">Missed</span>
-</div>
-<div class="flex items-center gap-3 mt-2">
-<button class="flex-1 flex items-center justify-center gap-2 py-3 px-4 bg-slate-100 dark:bg-slate-700 rounded-lg text-slate-700 dark:text-slate-200 font-bold transition-transform active:scale-95">
-<span class="material-symbols-outlined text-[20px]">volume_up</span>
-                        Listen
-                    </button>
-<button class="flex-1 flex items-center justify-center gap-2 py-3 px-4 bg-slate-900 dark:bg-white dark:text-slate-900 text-white rounded-lg font-bold transition-transform active:scale-95">
-<span class="material-symbols-outlined text-[20px]">edit</span>
-                        Take Now
-                    </button>
-</div>
-</div>
-<!-- Upcoming Section -->
-<div class="pt-4 border-t border-slate-100 dark:border-slate-800">
-<h4 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Upcoming Later</h4>
-<div class="flex items-center gap-4 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl opacity-60">
-<span class="text-lg font-semibold w-20">6:00 PM</span>
-<span class="text-lg">Evening Meal</span>
-</div>
-</div>
-<!-- Spacer for FAB -->
-<div class="h-24"></div>
-</main>
-<!-- Navigation Bar -->
-<nav class="sticky bottom-0 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 px-6 py-3 flex justify-between items-center">
- <a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors" href="homepage.html">
-    <span class="material-symbols-outlined">home</span>
-    <span class="text-[10px] font-bold uppercase tracking-tighter">Home Page</span>
-  </a>
- <a class="flex flex-col items-center gap-1 text-primary" href="voice_reminder.html">
-    <span class="material-symbols-outlined">notification_important</span>
-    <span class="text-[10px] font-bold uppercase tracking-tighter">Reminders</span>
-  </a>
-</nav>
-</div>
-</body></html>
+
+<script>
+    const API_BASE_URL = 'https://eldercare-backend-kfjh.onrender.com';
+    const userId = localStorage.getItem('userId') || 1;
+
+    async function loadReminders() {
+        showLoading();
+        try {
+            const response = await fetch(`${API_BASE_URL}/users/${userId}/reminders`);
+            const reminders = await response.json();
+            
+            if (reminders && reminders.length > 0) {
+                displayReminders(reminders);
+                updateProgress(reminders);
+            } else {
+                showSampleReminders();
+            }
+        } catch (error) {
+            console.error('Error loading reminders:', error);
+            showSampleReminders();
+        }
+        hideLoading();
+    }
+
+    function displayReminders(reminders) {
+        const container = document.getElementById('remindersContainer');
+        container.innerHTML = '';
+
+        reminders.forEach(reminder => {
+            const now = new Date();
+            const reminderTime = new Date();
+            const [hours, minutes] = reminder.time.split(':');
+            reminderTime.setHours(parseInt(hours), parseInt(minutes));
+            
+            let status = 'pending';
+            let statusColor = 'bg-orange-100 text-orange-700';
+            let statusIcon = 'schedule';
+            
+            if (reminderTime < now) {
+                status = 'missed';
+                statusColor = 'bg-red-100 text-red-700';
+                statusIcon = 'error';
+            }
+
+            const card = `
+                <div class="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col gap-4">
+                    <div class="flex justify-between items-start">
+                        <div class="space-y-1">
+                            <span class="text-lg font-bold text-slate-500 dark:text-slate-400">${reminder.time}</span>
+                            <h3 class="text-xl font-bold leading-tight">${reminder.type}</h3>
+                            ${reminder.dosage ? `<p class="text-sm text-slate-500">${reminder.dosage}</p>` : ''}
+                        </div>
+                        <span class="px-3 py-1 ${statusColor} text-sm font-bold rounded-full uppercase tracking-wide flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[16px]">${statusIcon}</span>
+                            ${status}
+                        </span>
+                    </div>
+                    <div class="flex items-center gap-3 mt-2">
+                        <button onclick="speakReminder('${reminder.type} at ${reminder.time}')" 
+                                class="flex-1 flex items-center justify-center gap-2 py-3 px-4 bg-slate-100 dark:bg-slate-700 rounded-lg text-slate-700 dark:text-slate-200 font-bold transition-transform active:scale-95">
+                            <span class="material-symbols-outlined text-[20px]">volume_up</span>
+                            Listen
+                        </button>
+                    </div>
+                </div>
+            `;
+            container.innerHTML += card;
+        });
+    }
+
+    function showSampleReminders() {
+        const sampleReminders = [
+            { type: 'Blood pressure medication', time: '08:00', dosage: '1 tablet' },
+            { type: 'Morning Walk', time: '09:30', dosage: '30 minutes' },
+            { type: 'Vitamin D', time: '12:00', dosage: '1 capsule' }
+        ];
+        displayReminders(sampleReminders);
+        updateProgress(sampleReminders);
+    }
+
+    function updateProgress(reminders) {
+        const total = reminders.length;
+        document.getElementById('progressText').innerText = `0 of ${total} Done`;
+        document.getElementById('progressPercentage').innerText = '0%';
+        document.getElementById('progressBar').style.width = '0%';
+    }
+
+    async function saveNewReminder() {
+        const type = document.getElementById('reminderType').value;
+        const time = document.getElementById('reminderTime').value;
+        const dosage = document.getElementById('reminderDosage').value;
+
+        if (!type || !time) {
+            alert('Please fill in type and time');
+            return;
+        }
+
+        const newReminder = {
+            type: type,
+            time: time,
+            dosage: dosage || null,
+            user_id: parseInt(userId)
+        };
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/reminders/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newReminder)
+            });
+
+            if (response.ok) {
+                closeAddReminderModal();
+                loadReminders();
+            } else {
+                alert('Failed to create reminder');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Network error');
+        }
+    }
+
+    function speakReminder(text) {
+        if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            window.speechSynthesis.speak(utterance);
+        }
+    }
+
+    function showLoading() {
+        document.getElementById('loadingModal').classList.remove('hidden');
+    }
+
+    function hideLoading() {
+        document.getElementById('loadingModal').classList.add('hidden');
+    }
+
+    function showAddReminderModal() {
+        document.getElementById('addReminderModal').classList.remove('hidden');
+    }
+
+    function closeAddReminderModal() {
+        document.getElementById('addReminderModal').classList.add('hidden');
+        document.getElementById('reminderType').value = '';
+        document.getElementById('reminderTime').value = '';
+        document.getElementById('reminderDosage').value = '';
+    }
+
+    function showExitModal() {
+        document.getElementById('exitModal').classList.remove('hidden');
+    }
+
+    function closeExitModal() {
+        document.getElementById('exitModal').classList.add('hidden');
+    }
+
+    window.addEventListener('load', loadReminders);
+</script>
+</body>
+</html>

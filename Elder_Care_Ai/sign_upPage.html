@@ -27,22 +27,70 @@
   <style>
     body { font-family: 'Inter', sans-serif; }
     .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .loading-spinner {
+      border: 4px solid rgba(43, 160, 238, 0.1);
+      border-top: 4px solid #2ba0ee;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
-  <!-- Top Navigation Bar -->
-  <header class="w-full bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-4">
+  <!-- Header -->
+  <header class="w-full bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-4 flex items-center justify-between">
     <div class="flex items-center gap-3">
       <div class="bg-primary/10 p-2 rounded-lg">
         <span class="material-symbols-outlined text-primary text-3xl">health_and_safety</span>
       </div>
       <h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Elder Care AI</h1>
     </div>
+    
+    <!-- Exit Button -->
+    <div class="relative group">
+      <a href="#" onclick="showExitModal(); return false;" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-primary/10 transition-all">
+        <span class="material-symbols-outlined text-slate-600 dark:text-slate-400 group-hover:text-primary">logout</span>
+      </a>
+    </div>
   </header>
+
+  <!-- Exit Modal -->
+  <div id="exitModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 max-w-sm mx-4 shadow-2xl">
+      <div class="text-center mb-6">
+        <div class="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+          <span class="material-symbols-outlined text-primary text-4xl">logout</span>
+        </div>
+        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Leave Sign Up?</h3>
+        <p class="text-slate-600 dark:text-slate-400">Your progress will be lost.</p>
+      </div>
+      <div class="flex gap-3">
+        <button onclick="closeExitModal()" class="flex-1 py-3 border-2 border-slate-300 rounded-xl font-bold text-slate-700 hover:bg-slate-50 transition-colors">
+          Stay
+        </button>
+        <a href="signin.html" class="flex-1 py-3 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-colors text-center">
+          Exit
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Modal -->
+  <div id="loadingModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl p-8 max-w-sm mx-4 shadow-2xl text-center">
+      <div class="loading-spinner mx-auto mb-4"></div>
+      <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Creating your account...</h3>
+      <p class="text-slate-600 dark:text-slate-400">Please wait a moment</p>
+    </div>
+  </div>
 
   <main class="py-8 px-6">
     <div class="max-w-lg mx-auto">
-      <!-- Signup Card -->
       <div class="bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 overflow-hidden">
         <!-- Header -->
         <div class="p-8 pb-4 text-center">
@@ -62,66 +110,55 @@
         </div>
 
         <!-- Signup Form -->
-        <form class="p-8 pt-6 space-y-6">
-          <!-- Full Name -->
+        <form class="p-8 pt-6 space-y-6" id="signupForm" onsubmit="handleSignup(event)">
           <div class="space-y-2">
-            <label class="block text-lg font-bold text-slate-800 dark:text-slate-200" for="fullname">Full Name</label>
+            <label class="block text-lg font-bold text-slate-800 dark:text-slate-200">Full Name *</label>
             <div class="relative">
               <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">person</span>
-              <input class="w-full h-14 pl-12 pr-4 rounded-lg border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-lg focus:border-primary focus:ring-0 outline-none" id="fullname" placeholder="e.g. Mama Adebayo" type="text" />
+              <input class="w-full h-14 pl-12 pr-4 rounded-lg border-2 border-slate-300 bg-white text-lg focus:border-primary outline-none" id="name" placeholder="e.g. Mama Adebayo" type="text" required />
             </div>
           </div>
 
-          <!-- Email -->
           <div class="space-y-2">
-            <label class="block text-lg font-bold text-slate-800 dark:text-slate-200" for="email">Email Address</label>
+            <label class="block text-lg font-bold text-slate-800 dark:text-slate-200">Age *</label>
             <div class="relative">
-              <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">mail</span>
-              <input class="w-full h-14 pl-12 pr-4 rounded-lg border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-lg focus:border-primary focus:ring-0 outline-none" id="email" placeholder="e.g. mama@email.com" type="email" />
+              <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">calendar_month</span>
+              <input class="w-full h-14 pl-12 pr-4 rounded-lg border-2 border-slate-300 bg-white text-lg focus:border-primary outline-none" id="age" placeholder="e.g. 75" type="number" required />
             </div>
           </div>
 
-          <!-- Phone Number -->
           <div class="space-y-2">
-            <label class="block text-lg font-bold text-slate-800 dark:text-slate-200" for="phone">Phone Number</label>
-            <div class="relative">
-              <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">call</span>
-              <input class="w-full h-14 pl-12 pr-4 rounded-lg border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-lg focus:border-primary focus:ring-0 outline-none" id="phone" placeholder="e.g. 08012345678" type="tel" />
-            </div>
+            <label class="block text-lg font-bold text-slate-800 dark:text-slate-200">Language</label>
+            <select id="language" class="w-full h-14 px-4 rounded-lg border-2 border-slate-300 bg-white text-lg focus:border-primary outline-none">
+              <option value="English">English</option>
+              <option value="Yoruba">Yoruba</option>
+              <option value="Igbo">Igbo</option>
+              <option value="Hausa">Hausa</option>
+            </select>
           </div>
 
-          <!-- Password -->
           <div class="space-y-2">
-            <label class="block text-lg font-bold text-slate-800 dark:text-slate-200" for="password">Password</label>
-            <div class="relative">
-              <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">lock</span>
-              <input class="w-full h-14 pl-12 pr-14 rounded-lg border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-lg focus:border-primary focus:ring-0 outline-none" id="password" placeholder="Create password" type="password" />
-              <button class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-primary" type="button">
-                <span class="material-symbols-outlined">visibility</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Emergency Contact -->
-          <div class="space-y-2">
-            <label class="block text-lg font-bold text-slate-800 dark:text-slate-200">Emergency Contact (Optional)</label>
+            <label class="block text-lg font-bold text-slate-800 dark:text-slate-200">Emergency Contact</label>
             <div class="relative">
               <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">emergency</span>
-              <input class="w-full h-14 pl-12 pr-4 rounded-lg border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-lg focus:border-primary outline-none" placeholder="Emergency contact phone" type="tel" />
+              <input class="w-full h-14 pl-12 pr-4 rounded-lg border-2 border-slate-300 bg-white text-lg focus:border-primary outline-none" id="emergency_contact" placeholder="Phone number" type="tel" />
             </div>
           </div>
 
-          <!-- Sign Up Button -->
-          <div class="pt-4">
-            <a href="homepage.html">
-              <button type="button" class="w-full h-14 bg-primary hover:bg-primary/90 text-white text-xl font-bold rounded-lg shadow-lg shadow-primary/20 transition-transform active:scale-[0.98] flex items-center justify-center gap-2">
-                <span>Create Elder Account</span>
-                <span class="material-symbols-outlined">arrow_forward</span>
-              </button>
-            </a>
+          <div class="space-y-2">
+            <label class="block text-lg font-bold text-slate-800 dark:text-slate-200">Caregiver ID (Optional)</label>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">badge</span>
+              <input class="w-full h-14 pl-12 pr-4 rounded-lg border-2 border-slate-300 bg-white text-lg focus:border-primary outline-none" id="caregiver_id" placeholder="Caregiver ID" type="number" />
+            </div>
           </div>
 
-          <!-- Sign In Link -->
+          <div class="pt-4">
+            <button type="submit" class="w-full h-14 bg-primary hover:bg-primary/90 text-white text-xl font-bold rounded-lg shadow-lg transition-transform active:scale-[0.98]">
+              Create Elder Account
+            </button>
+          </div>
+
           <p class="text-center text-slate-600 dark:text-slate-400">
             Already have an account? 
             <a href="signin.html" class="text-primary font-bold hover:underline">Sign In</a>
@@ -130,5 +167,62 @@
       </div>
     </div>
   </main>
+
+  <script>
+    const API_BASE_URL = 'https://eldercare-backend-kfjh.onrender.com';
+
+    async function handleSignup(event) {
+      event.preventDefault();
+      
+      const userData = {
+        name: document.getElementById('name').value,
+        age: parseInt(document.getElementById('age').value),
+        language: document.getElementById('language').value,
+        emergency_contact: document.getElementById('emergency_contact').value,
+        caregiver_id: document.getElementById('caregiver_id').value ? parseInt(document.getElementById('caregiver_id').value) : null
+      };
+
+      showLoading();
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/users/`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(userData)
+        });
+
+        if (response.ok) {
+          const user = await response.json();
+          localStorage.setItem('userId', user.id);
+          localStorage.setItem('userName', user.name);
+          localStorage.setItem('userLanguage', user.language.toLowerCase());
+          window.location.href = 'homepage.html';
+        } else {
+          alert('Sign up failed. Please try again.');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Network error. Please try again.');
+      }
+
+      hideLoading();
+    }
+
+    function showLoading() {
+      document.getElementById('loadingModal').classList.remove('hidden');
+    }
+
+    function hideLoading() {
+      document.getElementById('loadingModal').classList.add('hidden');
+    }
+
+    function showExitModal() {
+      document.getElementById('exitModal').classList.remove('hidden');
+    }
+
+    function closeExitModal() {
+      document.getElementById('exitModal').classList.add('hidden');
+    }
+  </script>
 </body>
 </html>

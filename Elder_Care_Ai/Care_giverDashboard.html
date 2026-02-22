@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-  <title>Welcome to Elder Care AI</title>
+  <title>Caregiver Dashboard - Elder Care AI</title>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
@@ -27,36 +27,30 @@
   <style>
     body { font-family: 'Inter', sans-serif; }
     .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-    .confetti-bg {
-      background: linear-gradient(145deg, #f6f7f8 0%, #e8f0fe 100%);
+    .loading-spinner {
+      border: 4px solid rgba(43, 160, 238, 0.1);
+      border-top: 4px solid #2ba0ee;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
     }
-    .exit-button {
-      transition: all 0.2s ease;
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
-    .exit-button:hover {
-      background-color: rgba(43, 160, 238, 0.1);
+    .pulse-animation {
+      animation: pulse 2s infinite;
     }
-    .exit-tooltip {
-      position: absolute;
-      bottom: -30px;
-      right: 0;
-      background-color: #2ba0ee;
-      color: white;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 12px;
-      white-space: nowrap;
-      opacity: 0;
-      transition: opacity 0.2s ease;
-      pointer-events: none;
-    }
-    .group:hover .exit-tooltip {
-      opacity: 1;
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
     }
   </style>
 </head>
 <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
-  <!-- Header Section with Exit Icon -->
+  <!-- Header -->
   <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10">
     <div class="px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-2">
@@ -66,35 +60,37 @@
         <h1 class="text-primary font-bold text-lg tracking-tight">Elder Care AI</h1>
       </div>
       
-      <!-- Exit/Logout Button with tooltip -->
+      <!-- Exit Button -->
       <div class="relative group">
-        <a 
-          href="sign_upPage.html" 
-          class="exit-button flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-primary/10 transition-all"
-          aria-label="Go to login page"
-          onclick="return confirmExit(event)"
-        >
+        <a href="#" onclick="showExitModal(); return false;" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-primary/10 transition-all">
           <span class="material-symbols-outlined text-slate-600 dark:text-slate-400 group-hover:text-primary">logout</span>
-          <span class="text-sm font-medium text-slate-600 dark:text-slate-400 group-hover:text-primary hidden sm:block">Exit</span>
         </a>
-        <!-- Tooltip for elderly users -->
-        <span class="exit-tooltip">Click to go to login page</span>
+      </div>
+    </div>
+    <div class="px-4 pb-4 flex items-center justify-between">
+      <div>
+        <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Caregiver Dashboard</h2>
+        <p class="text-sm text-slate-500 mt-1" id="lastUpdated">Loading...</p>
+      </div>
+      <div class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+        Live Updates
       </div>
     </div>
   </header>
 
-  <!-- Confirmation Modal -->
+  <!-- Exit Modal -->
   <div id="exitModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
     <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 max-w-sm mx-4 shadow-2xl">
       <div class="text-center mb-6">
         <div class="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
           <span class="material-symbols-outlined text-primary text-4xl">logout</span>
         </div>
-        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Leave this page?</h3>
+        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Leave Dashboard?</h3>
         <p class="text-slate-600 dark:text-slate-400">This will take you back to the login screen.</p>
       </div>
       <div class="flex gap-3">
-        <button onclick="closeModal()" class="flex-1 py-3 border-2 border-slate-300 rounded-xl font-bold text-slate-700 hover:bg-slate-50 transition-colors">
+        <button onclick="closeExitModal()" class="flex-1 py-3 border-2 border-slate-300 rounded-xl font-bold text-slate-700 hover:bg-slate-50 transition-colors">
           Stay
         </button>
         <a href="sign_upPage.html" class="flex-1 py-3 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-colors text-center">
@@ -104,160 +100,428 @@
     </div>
   </div>
 
-  <main class="p-6 max-w-md mx-auto pb-24">
-    <!-- Welcome Card -->
-    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 overflow-hidden mb-6">
-      <!-- Celebration Header -->
-      <div class="bg-gradient-to-r from-primary/20 to-primary/5 p-8 text-center border-b border-slate-100 dark:border-slate-800">
-        <div class="inline-flex items-center justify-center w-24 h-24 bg-primary/20 rounded-full mb-4 animate-bounce">
-          <span class="material-symbols-outlined text-primary text-5xl">celebration</span>
+  <!-- Loading Modal -->
+  <div id="loadingModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl p-8 max-w-sm mx-4 shadow-2xl text-center">
+      <div class="loading-spinner mx-auto mb-4"></div>
+      <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Loading Dashboard...</h3>
+      <p class="text-slate-600 dark:text-slate-400">Fetching latest data</p>
+    </div>
+  </div>
+
+  <main class="p-4 max-w-md mx-auto pb-28">
+    <!-- Welcome Banner for New Users -->
+    <div class="bg-gradient-to-r from-primary/20 to-primary/5 rounded-xl p-4 mb-6 border border-primary/30">
+      <div class="flex items-center gap-3">
+        <div class="bg-primary/20 p-2 rounded-full">
+          <span class="material-symbols-outlined text-primary">celebration</span>
         </div>
-        <h2 class="text-3xl font-black text-slate-900 dark:text-white mb-2">Welcome, Dr. Okafor! 👋</h2>
-        <p class="text-lg text-slate-600 dark:text-slate-400">Your caregiver account has been created successfully</p>
-      </div>
-
-      <!-- What's Next Section -->
-      <div class="p-6 space-y-6">
-        <h3 class="text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-          <span class="material-symbols-outlined text-primary">rocket_launch</span>
-          Let's get you started
-        </h3>
-
-        <!-- Setup Progress -->
-        <div class="space-y-4">
-          <!-- Step 1: Connect Elder -->
-          <div class="flex items-start gap-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700">
-            <div class="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-              <span class="text-primary font-bold text-lg">1</span>
-            </div>
-            <div class="flex-1">
-              <h4 class="font-bold text-slate-800 dark:text-slate-100 mb-1">Connect with an Elder</h4>
-              <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">Link your account to the elderly person you'll be caring for</p>
-              <button class="px-4 py-2 bg-primary text-white rounded-lg text-sm font-bold hover:bg-primary/90 transition-colors">
-                Connect Now
-              </button>
-            </div>
-          </div>
-
-          <!-- Step 2: Complete Profile -->
-          <div class="flex items-start gap-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700">
-            <div class="w-8 h-8 bg-slate-300 dark:bg-slate-700 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-              <span class="text-slate-600 dark:text-slate-300 font-bold text-lg">2</span>
-            </div>
-            <div class="flex-1">
-              <h4 class="font-bold text-slate-800 dark:text-slate-100 mb-1">Complete Your Profile</h4>
-              <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">Add your contact details and preferred notification methods</p>
-              <button class="px-4 py-2 border-2 border-primary text-primary rounded-lg text-sm font-bold hover:bg-primary/5 transition-colors">
-                Complete Profile
-              </button>
-            </div>
-          </div>
-
-          <!-- Step 3: Set Up Reminders -->
-          <div class="flex items-start gap-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700">
-            <div class="w-8 h-8 bg-slate-300 dark:bg-slate-700 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-              <span class="text-slate-600 dark:text-slate-300 font-bold text-lg">3</span>
-            </div>
-            <div class="flex-1">
-              <h4 class="font-bold text-slate-800 dark:text-slate-100 mb-1">Create First Reminder</h4>
-              <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">Set up medication reminders for the elderly person</p>
-              <button class="px-4 py-2 border-2 border-primary text-primary rounded-lg text-sm font-bold hover:bg-primary/5 transition-colors">
-                Add Reminder
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Quick Actions Grid -->
-        <div class="pt-4">
-          <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 mb-3 flex items-center gap-2">
-            <span class="material-symbols-outlined text-primary">bolt</span>
-            Quick Actions
-          </h3>
-          <div class="grid grid-cols-2 gap-3">
-            <a href="add_elder.html" class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 text-center hover:border-primary transition-colors">
-              <span class="material-symbols-outlined text-primary text-3xl block mb-1">person_add</span>
-              <span class="text-sm font-bold">Add Elder</span>
-            </a>
-            <a href="emergency_contacts.html" class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 text-center hover:border-primary transition-colors">
-              <span class="material-symbols-outlined text-primary text-3xl block mb-1">emergency</span>
-              <span class="text-sm font-bold">Emergency Contacts</span>
-            </a>
-            <a href="voice_reminder.html" class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 text-center hover:border-primary transition-colors">
-              <span class="material-symbols-outlined text-primary text-3xl block mb-1">notifications</span>
-              <span class="text-sm font-bold">Set Reminders</span>
-            </a>
-            <a href="health_settings.html" class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 text-center hover:border-primary transition-colors">
-              <span class="material-symbols-outlined text-primary text-3xl block mb-1">health_and_safety</span>
-              <span class="text-sm font-bold">Health Info</span>
-            </a>
-          </div>
-        </div>
-
-        <!-- Tips Card -->
-        <div class="bg-primary/5 rounded-xl p-5 border border-primary/20">
-          <div class="flex items-start gap-3">
-            <span class="material-symbols-outlined text-primary">lightbulb</span>
-            <div>
-              <h4 class="font-bold text-slate-800 dark:text-slate-100 mb-1">Pro Tip</h4>
-              <p class="text-sm text-slate-600 dark:text-slate-400">Connect with an elder first to start receiving alerts and tracking their health data. You can connect with multiple elders if you're caring for more than one person.</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Go to Dashboard Button -->
-        <div class="pt-4">
-          <a href="Care_giverDashboard.html">
-            <button class="w-full py-4 bg-primary hover:bg-primary/90 text-white text-lg font-bold rounded-xl shadow-lg shadow-primary/20 transition-transform active:scale-[0.98] flex items-center justify-center gap-2">
-              <span>Go to Dashboard</span>
-              <span class="material-symbols-outlined">arrow_forward</span>
-            </button>
-          </a>
-          <p class="text-center text-sm text-slate-500 mt-3">Your dashboard will show data once you've connected with an elder</p>
+        <div>
+          <h3 class="font-bold text-slate-800 dark:text-slate-100">Welcome to Your Dashboard!</h3>
+          <p class="text-xs text-slate-500">Here you'll see real-time updates from your loved ones</p>
         </div>
       </div>
     </div>
+
+    <!-- Stats Cards - Enhanced -->
+    <div class="grid grid-cols-2 gap-4 mb-6">
+      <div class="bg-white dark:bg-slate-900 rounded-xl p-5 shadow-sm border border-slate-200">
+        <div class="flex items-center gap-3">
+          <div class="bg-red-100 p-2 rounded-lg">
+            <span class="material-symbols-outlined text-red-600">emergency</span>
+          </div>
+          <div>
+            <p class="text-2xl font-bold" id="activeAlertsCount">0</p>
+            <p class="text-xs text-slate-500">Active Alerts</p>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white dark:bg-slate-900 rounded-xl p-5 shadow-sm border border-slate-200">
+        <div class="flex items-center gap-3">
+          <div class="bg-primary/10 p-2 rounded-lg">
+            <span class="material-symbols-outlined text-primary">call_log</span>
+          </div>
+          <div>
+            <p class="text-2xl font-bold" id="emergencyCallsCount">0</p>
+            <p class="text-xs text-slate-500">Emergency Calls</p>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white dark:bg-slate-900 rounded-xl p-5 shadow-sm border border-slate-200">
+        <div class="flex items-center gap-3">
+          <div class="bg-green-100 p-2 rounded-lg">
+            <span class="material-symbols-outlined text-green-600">medication</span>
+          </div>
+          <div>
+            <p class="text-2xl font-bold" id="medicationRate">0%</p>
+            <p class="text-xs text-slate-500">Medication Adherence</p>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white dark:bg-slate-900 rounded-xl p-5 shadow-sm border border-slate-200">
+        <div class="flex items-center gap-3">
+          <div class="bg-purple-100 p-2 rounded-lg">
+            <span class="material-symbols-outlined text-purple-600">elderly</span>
+          </div>
+          <div>
+            <p class="text-2xl font-bold" id="eldersCount">1</p>
+            <p class="text-xs text-slate-500">Elders</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Elders Section -->
+    <section class="mb-6">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary">family_history</span>
+          Elders Under Care
+        </h3>
+        <button class="text-xs bg-primary/10 text-primary px-3 py-1 rounded-full">+ Add Elder</button>
+      </div>
+      
+      <div id="eldersContainer" class="space-y-3">
+        <!-- Dynamic elders will be loaded here -->
+      </div>
+    </section>
+
+    <!-- Emergency Alerts Section (Priority) -->
+    <section class="mb-6">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+          <span class="material-symbols-outlined text-red-500">emergency</span>
+          Emergency Alerts
+          <span id="emergencyBadge" class="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full hidden">!</span>
+        </h3>
+        <button onclick="viewAllAlerts()" class="text-xs text-primary">View All</button>
+      </div>
+      
+      <div id="alertsContainer" class="space-y-3">
+        <!-- Alerts loaded here -->
+      </div>
+    </section>
+
+    <!-- Recent Activity Timeline -->
+    <section class="mb-6">
+      <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 mb-3 flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary">timeline</span>
+        Recent Activity
+      </h3>
+      
+      <div id="activityContainer" class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 p-4 space-y-3">
+        <!-- Activity items loaded here -->
+      </div>
+    </section>
+
+    <!-- Quick Actions -->
+    <section class="grid grid-cols-2 gap-3">
+      <button onclick="checkInAll()" class="p-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 flex items-center justify-center gap-2 hover:border-primary transition-all">
+        <span class="material-symbols-outlined text-primary">check_circle</span>
+        <span class="text-sm font-medium">Check-in All</span>
+      </button>
+      <button onclick="sendMessage()" class="p-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 flex items-center justify-center gap-2 hover:border-primary transition-all">
+        <span class="material-symbols-outlined text-primary">send</span>
+        <span class="text-sm font-medium">Send Message</span>
+      </button>
+    </section>
   </main>
 
   <!-- Bottom Navigation -->
   <nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-6 py-3 flex justify-between items-center">
-    <a href="homepage.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
-      <span class="material-symbols-outlined text-2xl">home</span>
-      <span class="text-xs font-medium">Home</span>
-    </a>
-    <a href="voice_reminder.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
-      <span class="material-symbols-outlined text-2xl">notifications</span>
-      <span class="text-xs font-medium">Reminders</span>
-    </a>
-    <a href="Care_giverDashboard.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
-      <span class="material-symbols-outlined text-2xl">dashboard</span>
-      <span class="text-xs font-medium">Dashboard</span>
-    </a>
-    <a href="heallthcare_assistant.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
-      <span class="material-symbols-outlined text-2xl">favorite</span>
-      <span class="text-xs font-medium">Health</span>
-    </a>
   </nav>
 
   <script>
-    // Function to show confirmation modal
-    function confirmExit(event) {
-      event.preventDefault();
-      document.getElementById('exitModal').classList.remove('hidden');
-      return false;
+    const API_BASE_URL = 'https://eldercare-backend-kfjh.onrender.com';
+    const caregiverId = localStorage.getItem('caregiverId') || 'CAREGIVER001';
+    const caregiverName = localStorage.getItem('caregiverName') || 'Dr. Okafor';
+
+    // ==================== SAMPLE DATA FOR NEW ACCOUNTS ====================
+    const sampleElders = [
+      {
+        id: 1,
+        name: 'Mama Adebayo',
+        age: 78,
+        language: 'Yoruba',
+        status: 'online',
+        lastActive: '2 minutes ago',
+        avatar: '👵',
+        medicationAdherence: 95,
+        alerts: []
+      },
+      {
+        id: 2,
+        name: 'Papa Okafor',
+        age: 82,
+        language: 'English',
+        status: 'away',
+        lastActive: '1 hour ago',
+        avatar: '👴',
+        medicationAdherence: 88,
+        alerts: []
+      }
+    ];
+
+    const sampleAlerts = [
+      {
+        id: 1,
+        type: 'emergency_call',
+        severity: 'high',
+        elderName: 'Mama Adebayo',
+        message: '🚨 Emergency call triggered - "Egba mi o"',
+        time: '5 minutes ago',
+        duration: '00:45',
+        resolved: false
+      },
+      {
+        id: 2,
+        type: 'fall',
+        severity: 'high',
+        elderName: 'Papa Okafor',
+        message: '⚠️ Fall detected in bedroom',
+        time: '15 minutes ago',
+        resolved: false
+      },
+      {
+        id: 3,
+        type: 'medication',
+        severity: 'medium',
+        elderName: 'Mama Adebayo',
+        message: '💊 Missed medication: Blood pressure (8:00 AM)',
+        time: '2 hours ago',
+        resolved: true
+      }
+    ];
+
+    const sampleActivities = [
+      { icon: 'mic', text: 'Mama Adebayo asked "How are you?" in Yoruba', time: '10 min ago', elder: 'Mama' },
+      { icon: 'medication', text: 'Papa Okafor took Diabetes medication', time: '25 min ago', elder: 'Papa' },
+      { icon: 'chat', text: 'Voice conversation about feeling tired', time: '1 hour ago', elder: 'Mama' },
+      { icon: 'check_circle', text: 'Morning check-in completed', time: '2 hours ago', elder: 'Both' }
+    ];
+
+    // ==================== LOAD DASHBOARD ====================
+    async function loadDashboard() {
+      showLoading();
+      
+      try {
+        // Try to fetch from API, but use sample data for demo
+        const response = await fetch(`${API_BASE_URL}/alerts/`).catch(() => null);
+        const alerts = response ? await response.json() : sampleAlerts;
+        
+        displayAlerts(alerts);
+        displayElders(sampleElders);
+        displayActivities(sampleActivities);
+        updateStats(alerts, sampleElders);
+        
+        // Update last updated time
+        document.getElementById('lastUpdated').innerHTML = `Last updated: ${new Date().toLocaleTimeString()}`;
+        
+        // Check for emergency badge
+        const hasEmergency = alerts.some(a => !a.resolved && a.severity === 'high');
+        if (hasEmergency) {
+          document.getElementById('emergencyBadge').classList.remove('hidden');
+        }
+        
+      } catch (error) {
+        console.error('Error loading dashboard:', error);
+        // Use sample data as fallback
+        displayAlerts(sampleAlerts);
+        displayElders(sampleElders);
+        displayActivities(sampleActivities);
+        updateStats(sampleAlerts, sampleElders);
+      }
+      
+      hideLoading();
     }
-    
-    function closeModal() {
-      document.getElementById('exitModal').classList.add('hidden');
+
+    // ==================== DISPLAY ELDERS ====================
+    function displayElders(elders) {
+      const container = document.getElementById('eldersContainer');
+      
+      container.innerHTML = elders.map(elder => `
+        <div class="bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200 hover:border-primary transition-all">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-2xl">
+              ${elder.avatar}
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center justify-between">
+                <h4 class="font-bold text-slate-900 dark:text-white">${elder.name}</h4>
+                <span class="flex items-center gap-1">
+                  <span class="w-2 h-2 rounded-full ${elder.status === 'online' ? 'bg-green-500 animate-pulse' : 'bg-slate-400'}"></span>
+                  <span class="text-xs text-slate-500">${elder.status}</span>
+                </span>
+              </div>
+              <p class="text-xs text-slate-500">${elder.age} years • ${elder.language}</p>
+              <div class="flex items-center gap-2 mt-2">
+                <div class="flex-1 bg-slate-200 h-1.5 rounded-full">
+                  <div class="bg-primary h-1.5 rounded-full" style="width: ${elder.medicationAdherence}%"></div>
+                </div>
+                <span class="text-xs font-medium">${elder.medicationAdherence}%</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex gap-2 mt-3">
+            <button onclick="callElder(${elder.id})" class="flex-1 text-xs bg-primary/10 text-primary py-2 rounded-lg hover:bg-primary/20 transition-colors">
+              Call
+            </button>
+            <button onclick="viewElder(${elder.id})" class="flex-1 text-xs border border-slate-200 py-2 rounded-lg hover:border-primary transition-colors">
+              View
+            </button>
+          </div>
+        </div>
+      `).join('');
     }
-    
-    // Close modal if user clicks outside
-    window.onclick = function(event) {
-      const modal = document.getElementById('exitModal');
-      if (event.target === modal) {
-        closeModal();
+
+    // ==================== DISPLAY ALERTS ====================
+    function displayAlerts(alerts) {
+      const container = document.getElementById('alertsContainer');
+      
+      if (!alerts || alerts.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white dark:bg-slate-900 rounded-xl p-8 text-center border border-slate-200">
+            <span class="material-symbols-outlined text-4xl text-slate-300 mb-2">notifications_off</span>
+            <p class="text-slate-500">No active alerts</p>
+            <p class="text-xs text-slate-400 mt-1">All elders are safe</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = alerts.slice(0, 3).map(alert => {
+        const severityColor = alert.severity === 'high' ? 'red' : alert.severity === 'medium' ? 'orange' : 'yellow';
+        const icon = alert.type === 'emergency_call' ? 'emergency' : 
+                    alert.type === 'fall' ? 'warning' : 'medication';
+        
+        return `
+          <div class="bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200 ${!alert.resolved && alert.severity === 'high' ? 'border-l-4 border-l-red-500 pulse-animation' : ''}">
+            <div class="flex items-start gap-3">
+              <div class="bg-${severityColor}-100 p-2 rounded-lg flex-shrink-0">
+                <span class="material-symbols-outlined text-${severityColor}-600">${icon}</span>
+              </div>
+              <div class="flex-1">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold uppercase text-${severityColor}-600">${alert.type}</span>
+                  <span class="text-xs text-slate-400">${alert.time}</span>
+                </div>
+                <p class="text-sm font-medium mt-1">${alert.elderName}</p>
+                <p class="text-sm text-slate-600 dark:text-slate-400">${alert.message}</p>
+                ${alert.duration ? `<p class="text-xs text-slate-400 mt-1">Call duration: ${alert.duration}</p>` : ''}
+                
+                <div class="flex gap-2 mt-3">
+                  ${!alert.resolved ? `
+                    <button onclick="resolveAlert(${alert.id})" class="flex-1 text-xs bg-green-100 text-green-700 py-1.5 rounded-lg hover:bg-green-200 transition-colors">
+                      Resolve
+                    </button>
+                    <button onclick="callElder('${alert.elderName}')" class="flex-1 text-xs bg-primary/10 text-primary py-1.5 rounded-lg hover:bg-primary/20 transition-colors">
+                      Call
+                    </button>
+                  ` : `
+                    <span class="flex-1 text-center text-xs text-slate-400 py-1.5">Resolved</span>
+                  `}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ==================== DISPLAY ACTIVITIES ====================
+    function displayActivities(activities) {
+      const container = document.getElementById('activityContainer');
+      
+      container.innerHTML = activities.map(activity => `
+        <div class="flex items-start gap-3 text-sm border-b border-slate-100 dark:border-slate-800 pb-2 last:border-0">
+          <div class="bg-primary/10 p-1.5 rounded-full">
+            <span class="material-symbols-outlined text-primary text-lg">${activity.icon}</span>
+          </div>
+          <div class="flex-1">
+            <p class="text-slate-700 dark:text-slate-300">${activity.text}</p>
+            <p class="text-xs text-slate-400">${activity.time}</p>
+          </div>
+          <span class="text-xs text-primary">${activity.elder}</span>
+        </div>
+      `).join('');
+    }
+
+    // ==================== UPDATE STATS ====================
+    function updateStats(alerts, elders) {
+      const activeAlerts = alerts.filter(a => !a.resolved).length;
+      const emergencyCalls = alerts.filter(a => a.type === 'emergency_call' && !a.resolved).length;
+      const avgAdherence = elders.reduce((acc, e) => acc + e.medicationAdherence, 0) / elders.length;
+      
+      document.getElementById('activeAlertsCount').innerText = activeAlerts;
+      document.getElementById('emergencyCallsCount').innerText = emergencyCalls;
+      document.getElementById('medicationRate').innerText = Math.round(avgAdherence) + '%';
+      document.getElementById('eldersCount').innerText = elders.length;
+    }
+
+    // ==================== ACTION FUNCTIONS ====================
+    async function resolveAlert(alertId) {
+      try {
+        await fetch(`${API_BASE_URL}/alerts/${alertId}/resolve`, { method: 'PUT' });
+        loadDashboard();
+      } catch (error) {
+        console.error('Error resolving alert:', error);
+        // Optimistic update for demo
+        showToast('Alert resolved successfully');
+        loadDashboard();
       }
     }
+
+    function callElder(elderName) {
+      alert(`📞 Calling ${elderName}...`);
+    }
+
+    function viewElder(elderId) {
+      window.location.href = `elder_details.html?id=${elderId}`;
+    }
+
+    function viewAllAlerts() {
+      window.location.href = 'all_alerts.html';
+    }
+
+    function checkInAll() {
+      alert('✅ Check-in sent to all elders');
+    }
+
+    function sendMessage() {
+      alert('📱 Message feature coming soon');
+    }
+
+    function showToast(message) {
+      // Simple toast notification
+      const toast = document.createElement('div');
+      toast.className = 'fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-4 py-2 rounded-full text-sm z-50 animate-bounce';
+      toast.innerText = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    // ==================== MODAL FUNCTIONS ====================
+    function showLoading() {
+      document.getElementById('loadingModal').classList.remove('hidden');
+    }
+
+    function hideLoading() {
+      document.getElementById('loadingModal').classList.add('hidden');
+    }
+
+    function showExitModal() {
+      document.getElementById('exitModal').classList.remove('hidden');
+    }
+
+    function closeExitModal() {
+      document.getElementById('exitModal').classList.add('hidden');
+    }
+
+    // ==================== INIT ====================
+    window.addEventListener('load', loadDashboard);
+
+    // Refresh data every 30 seconds
+    setInterval(loadDashboard, 30000);
   </script>
 </body>
 </html>
