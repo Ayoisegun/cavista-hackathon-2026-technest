@@ -4,7 +4,7 @@ from database import create_db_and_tables, engine
 from typing import List
 from models import DailyCheckin, Alert
 from models import User, Caregiver, Reminder, DailyCheckin, Alert
-
+import oa
 
 app = FastAPI()
 
