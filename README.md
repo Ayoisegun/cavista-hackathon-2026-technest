@@ -121,4 +121,4 @@ The AI acts as reminder, monitor, analyzer, and alert system - a true health par
 
 ---
 
-**Built for [Hackathon Name] 2025**
+**Built for Cavista Hackathon 2026**
