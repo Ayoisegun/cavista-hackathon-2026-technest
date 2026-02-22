@@ -9,7 +9,6 @@ A voice-first web-based health support system for elderly individuals that trans
 ## The Problem
 Elderly individuals face:
 - Missed medications
-- Sedentary lifestyle
 - Undetected health decline
 - Poor symptom reporting
 - Delayed emergency response
@@ -52,18 +51,12 @@ ElderCare AI combines:
 - Detects declining health trends
 - Alerts after multiple "Not Well" days
 
-### 3. Exercise Encouragement
-- Gentle activity suggestions
-- Tracks completion vs. skipping
-- Identifies sedentary behavior
-- Prevents cardiovascular risks
-
-### 4. Inactivity Detection
+### 3. Inactivity Detection
 - Monitors missed interactions
 - Detects unusual silence
 - Alerts caregiver to potential emergencies
 
-### 5. Emergency Button
+### 4. Emergency Button
 - One-tap activation
 - Calls caregiver immediately
 - Sends alert notification
