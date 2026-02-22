@@ -1,0 +1,241 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Voice Hub - Elder Care AI</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#2ba0ee",
+              "background-light": "#f6f7f8",
+              "background-dark": "#101b22",
+              "success-soft": "#e8f5e9",
+              "success-vibrant": "#4caf50",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              "2xl": "1rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .mic-shadow {
+        box-shadow:
+          0 0 0 15px rgba(43, 160, 238, 0.1),
+          0 10px 30px -5px rgba(43, 160, 238, 0.4);
+      }
+      .action-card-shadow {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      }
+      .exit-button {
+        transition: all 0.2s ease;
+      }
+      .exit-button:hover {
+        background-color: rgba(43, 160, 238, 0.1);
+      }
+      .exit-tooltip {
+        position: absolute;
+        bottom: -30px;
+        right: 0;
+        background-color: #2ba0ee;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 12px;
+        white-space: nowrap;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+        pointer-events: none;
+        z-index: 50;
+      }
+      .group:hover .exit-tooltip {
+        opacity: 1;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display"
+  >
+    <!-- Navigation Bar with Exit Icon - Now relative -->
+    <header
+      class="flex items-center justify-between px-6 py-6 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800"
+    >
+      <div class="flex items-center gap-3">
+        <div class="bg-primary/10 p-2 rounded-xl">
+          <span class="material-symbols-outlined text-primary text-3xl">home_health</span>
+        </div>
+        <h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Elder Care AI</h1>
+      </div>
+      
+      <!-- Exit/Logout Button with tooltip -->
+      <div class="relative group">
+        <a 
+          href="#" 
+          class="exit-button flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-primary/10 transition-all"
+          aria-label="Go to login page"
+          onclick="showModal(); return false;"
+        >
+          <span class="material-symbols-outlined text-slate-600 dark:text-slate-400 group-hover:text-primary">logout</span>
+          <span class="text-sm font-medium text-slate-600 dark:text-slate-400 group-hover:text-primary hidden sm:block">Exit</span>
+        </a>
+        <!-- Tooltip for elderly users -->
+        <span class="exit-tooltip">Click to go to login page</span>
+      </div>
+    </header>
+    
+    <!-- Confirmation Modal -->
+    <div id="exitModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+      <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 max-w-sm mx-4 shadow-2xl">
+        <div class="text-center mb-6">
+          <div class="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span class="material-symbols-outlined text-primary text-4xl">logout</span>
+          </div>
+          <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Leave this page?</h3>
+          <p class="text-slate-600 dark:text-slate-400">This will take you back to the login screen.</p>
+        </div>
+        <div class="flex gap-3">
+          <button onclick="closeModal()" class="flex-1 py-3 border-2 border-slate-300 rounded-xl font-bold text-slate-700 hover:bg-slate-50 transition-colors">
+            Stay
+          </button>
+          <a href="sign_upPage.html" class="flex-1 py-3 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-colors text-center">
+            Exit
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <main class="px-6 py-8">
+      <div class="max-w-md mx-auto space-y-12">
+        <!-- Central Voice Focus Area -->
+        <div class="flex flex-col items-center space-y-8">
+          <div class="text-center space-y-2">
+            <h2 class="text-3xl font-bold text-slate-800 dark:text-slate-100">
+              Tap to speak
+            </h2>
+            <p class="text-lg text-slate-500 dark:text-slate-400">
+              I'm here to help you
+            </p>
+          </div>
+          
+          <!-- Large Microphone Button -->
+          <div class="relative group cursor-pointer">
+            <!-- Outer Ring (Visual Pulse Indicator) -->
+            <div
+              class="absolute inset-0 rounded-full bg-primary/20 scale-125 animate-pulse"
+            ></div>
+            <button
+              class="relative z-10 w-48 h-48 rounded-full bg-primary text-white mic-shadow flex items-center justify-center active:scale-95 transition-transform duration-150 hover:scale-105"
+            >
+              <span class="material-symbols-outlined text-7xl font-light"
+                >mic</span
+              >
+            </button>
+          </div>
+          
+          <div class="text-center">
+            <p
+              class="text-xl font-medium text-slate-700 dark:text-slate-300 px-8 py-4 bg-white dark:bg-slate-800/50 rounded-full border border-slate-200 dark:border-slate-700 shadow-sm"
+            >
+              "I am listening and ready to help"
+            </p>
+          </div>
+        </div>
+        
+        <!-- Quick Actions Grid -->
+        <div class="grid grid-cols-1 gap-4 mt-12">
+          <!-- Reminders -->
+          <a href="voice_reminder.html" class="block transform transition hover:scale-[1.02]">
+            <button
+              class="w-full flex items-center p-6 bg-white dark:bg-slate-900 rounded-2xl action-card-shadow border-2 border-transparent hover:border-primary hover:bg-primary/5 transition-all group"
+            >
+              <div
+                class="w-14 h-14 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center mr-5"
+              >
+                <span class="material-symbols-outlined text-3xl"
+                  >notifications_active</span
+                >
+              </div>
+              <div class="text-left flex-1">
+                <span
+                  class="block text-xl font-bold text-slate-800 dark:text-slate-100"
+                  >Reminders</span
+                >
+                <span
+                  class="text-sm text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold"
+                  >Daily Schedule</span
+                >
+              </div>
+              <span
+                class="material-symbols-outlined ml-auto text-slate-300 dark:text-slate-600 group-hover:text-primary"
+                >chevron_right</span
+              >
+            </button>
+          </a>
+          
+          <!-- Add more action buttons here if needed -->
+        </div>
+      </div>
+    </main>
+    
+    <!-- Bottom Navigation - Now relative, not fixed -->
+    <nav
+      class="w-full bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-6 py-3 flex justify-around items-center shadow-lg mt-8"
+    >
+    </nav>
+    
+    <!-- Visual enhancement -->
+    <div
+      class="fixed inset-0 pointer-events-none -z-10 bg-[radial-gradient(circle_at_50%_40%,_var(--tw-gradient-stops))] from-primary/5 via-background-light to-background-light dark:from-primary/10 dark:via-background-dark dark:to-background-dark"
+    ></div>
+
+    <script>
+      function showModal() {
+        document.getElementById('exitModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+      
+      function closeModal() {
+        document.getElementById('exitModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+      }
+      
+      // Close modal if user clicks outside
+      window.onclick = function(event) {
+        const modal = document.getElementById('exitModal');
+        if (event.target === modal) {
+          closeModal();
+        }
+      }
+    </script>
+  </body>
+</html>
